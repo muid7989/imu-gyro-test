@@ -52,9 +52,9 @@ let xSpeed, ySpeed, zSpeed;
 let xPos, yPos, zPos;
 let prevXPos, prevYPos, prevZPos, prevInt;
 //const POS_EF = 0.95;
-const GY_EF = 0.0001;
+const GY_EF = 0.001;
 const CX = GRID_SIZE*1.5;
-const CY = GRID_SIZE*4;
+const CY = GRID_SIZE*5;
 
 let ball;
 
@@ -80,7 +80,7 @@ let logGraph = [
 		y: GRID_SIZE*2,
 		width: LOG_W,
 		height: GRID_SIZE*4,
-		offset: GRID_SIZE*0,
+		offset: GRID_SIZE*2,
 		max: 300,
 		color: 'blue',
 		drawX: 0,
@@ -90,7 +90,7 @@ let logGraph = [
 		y: GRID_SIZE*6,
 		width: LOG_W,
 		height: GRID_SIZE*4,
-		offset: 0,
+		offset: GRID_SIZE*2,
 		max: 300,
 		color: 'yellow',
 		subColor: 'green',
@@ -129,8 +129,9 @@ function setup() {
 	dataRate = 0;
 	drawIndex = 0;
 	logFlag = false;
-	xPos = CX;
-	yPos = CY;
+	xPos = 0;
+	yPos = 0;
+	zPos = 0;
 	xSpeed = 0;
 	ySpeed = 0;
 	zSpeed = 0;
@@ -150,9 +151,9 @@ function setup() {
 	}
 	outputIndex = 0;
 	ball = {};
-	ball.x = CX;
-	ball.y = CY;
-	ball.size = 30;
+	ball.x = 0;
+	ball.y = 0;
+	ball.size = 10;
 	for (let i=0; i<AVR_NUM; i++){
 		avrVal[i] = 0;
 		avrSum[i] = 0;
@@ -232,12 +233,6 @@ function draw() {
 	debugY += DEBUG_VIEW_H;
 	text('x:'+int(ball.x)+', y:'+int(ball.y), DEBUG_VIEW_X, debugY);
 	debugY += DEBUG_VIEW_H;
-/*
-	text('speed:'+xSpeed, DEBUG_VIEW_X, debugY);
-	debugY += DEBUG_VIEW_H;
-	text('pos:'+xPos, DEBUG_VIEW_X, debugY);
-	debugY += DEBUG_VIEW_H;
-*/
 	text('loss:'+lossCount, DEBUG_VIEW_X, debugY);
 	debugY += DEBUG_VIEW_H;
 	for (let i=0; i<val.length; i++){
@@ -258,6 +253,7 @@ function draw() {
 			dataTime += prevInt;
 			prevXPos = xPos;
 			prevYPos = yPos;
+			prevZPos = zPos;
 			if (calFlag){
 				for (let j=0; j<AVR_NUM; j++){
 					avrSum[j] += dataBuf[drawIndex][j+6];
@@ -275,8 +271,8 @@ function draw() {
 				xPos += xSpeed;
 				yPos += ySpeed;
 			}
-			dataBuf[drawIndex][val.length] = xPos;
-			drawGraph(logGraph[0], dataBuf[drawIndex][2]);
+			dataBuf[drawIndex][val.length] = yPos;
+			drawGraph(logGraph[0], dataBuf[drawIndex][7]);
 			drawGraph(logGraph[1], dataBuf[drawIndex][val.length]);
 			drawIndex++;
 			if (drawIndex>=DATA_SIZE){
@@ -290,7 +286,7 @@ function draw() {
 		}
 		ball.x = xPos + (prevXPos-xPos)*(dataTime-current)/prevInt;
 		ball.y = yPos + (prevYPos-yPos)*(dataTime-current)/prevInt;
-		outputBuf[outputIndex][0] = ball.x;
+		outputBuf[outputIndex][0] = ball.y;
 		outputBuf[outputIndex][1] = current-prevTime;
 //		outputBuf[outputIndex][1] = ball.x;
 //		drawGraph(logGraphSpeed, outputBuf[outputIndex][0]);
@@ -305,14 +301,15 @@ function draw() {
 	}
 	fill(255);
 	noStroke();
-//	circle(xPos, zPos, 50);
-	circle(ball.x, ball.y, ball.size);
-	stroke(255);
-	strokeWeight(3);
-	line(xPos, zPos, CX, CY);
-//	image(logGraphXa.graphics, logGraphXa.x, logGraphXa.y);
-//	image(logGraphSpeed.graphics, logGraphSpeed.x, logGraphSpeed.y);
-//	image(logGraphPos.graphics, logGraphPos.x, logGraphPos.y);
+	circle(CX, CY, ball.size);
+//	stroke(255);
+//	strokeWeight(3);
+//	line(xPos, zPos, CX, CY);
+	let yBase = int(ball.y/50)*50 - 250;
+	for (let i=0; i<10; i++){
+		const ty = CY-((yBase+i*50)-ball.y);
+		text(yBase+i*50, CX, ty);
+	}
 	for (let i=0; i<logGraph.length; i++){
 		image(logGraph[i].graphics, logGraph[i].x, logGraph[i].y);
 	}
