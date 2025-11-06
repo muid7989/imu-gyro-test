@@ -41,8 +41,6 @@ let dataTime;
 let prevTime;
 
 let calFlag = false;
-//let xGyAvr, yGyAvr, zGyAvr, xGyVal, yGyVal, zGyVal;
-//let xAvrSum, xAvrCount, yAvrSum, yAvv;
 let avrCount;
 let avrSum = [];
 let avrVal = [];
@@ -240,7 +238,6 @@ function draw() {
 		debugY += DEBUG_VIEW_H;
 	}
 	if (logFlag){
-//		outputBuf[outputIndex][0] = current - dataTime;
 		for (let i=0; i<8; i++){
 			if (drawIndex==dataIndex){
 				console.log(current, dataTime);
@@ -278,7 +275,6 @@ function draw() {
 			if (drawIndex>=DATA_SIZE){
 				drawIndex = 0;
 			}
-	//		console.log(current, dataTime);
 		}
 		if (current>dataTime){
 			dataTime = current+20;
@@ -288,10 +284,7 @@ function draw() {
 		ball.y = yPos + (prevYPos-yPos)*(dataTime-current)/prevInt;
 		outputBuf[outputIndex][0] = ball.y;
 		outputBuf[outputIndex][1] = current-prevTime;
-//		outputBuf[outputIndex][1] = ball.x;
-//		drawGraph(logGraphSpeed, outputBuf[outputIndex][0]);
 		drawGraph(logGraph[2], outputBuf[outputIndex][0]);
-//		drawGraph(logGraph[3], outputBuf[outputIndex][1]);
 		drawGraphSub(logGraph[2], outputBuf[outputIndex][1]);
 		prevTime = current;
 		outputIndex++;
@@ -302,9 +295,6 @@ function draw() {
 	fill(255);
 	noStroke();
 	circle(CX, CY, ball.size);
-//	stroke(255);
-//	strokeWeight(3);
-//	line(xPos, zPos, CX, CY);
 	let yBase = int(ball.y/50)*50 - 250;
 	for (let i=0; i<10; i++){
 		const ty = CY-((yBase+i*50)-ball.y);
@@ -355,7 +345,6 @@ async function connectToBle() {
 	function onTxCharacteristicValueChanged(event) {
 		dataCount++;
 		let receivedData = [];
-//		let id = event.target.value.getUint16(0, true);
 		for (let i=0; i<2; i++){
 			receivedData[i] = event.target.value.getUint16(i*2, true);
 		}
@@ -367,7 +356,6 @@ async function connectToBle() {
 		if (receivedData[1]<val[1]){
 			senseInterval = (50000+receivedData[1]-val[1])/10;
 		}
-//		console.log(id, receivedData);
 		for (let i=0; i<receivedData.length; i++){
 			val[i] = receivedData[i];
 			dataBuf[dataIndex][i] = val[i];
